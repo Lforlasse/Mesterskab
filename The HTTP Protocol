@@ -1,0 +1,125 @@
+1) Monitoring HTTP Headers 1:
+
+BEFORE REFACTORING index.html
+Name            Method  Status         Protocol     Domain      Type
+w2HTTPProcotol  GET     304 (redirect) http/1.1 ()  Localhost   document
+
+AFTER REFACTORING index.html -> index1.html
+Name            Method  Status                    Protocol     Domain      Type
+index1.html     GET     200 (succesfull response) http/1.1 ()  Localhost   document
+
+This is the important one to look at. As we change the name of index.html -> index1.html,
+the Status of the file goes from 304 to 200, as the file no longer is a defualt redirect
+but instead a succesfull respone.
+
+
+2)Monitoring HTTP Headers 2:
+
+Added batmanLogo.png to the page with: <img src="imgs/batmanLogo.png" alt="Batman" width="1000" height="800">
+Added Stylesheet to the page: <link rel="stylesheet" type="text/css" href="myStyle.css">
+
+GET /w2HTTPProtocol/myStyle.css HTTP/1.1
+The Connection general header controls whether or not the network connection stays open 
+after the current transaction finishes. If the value sent is keep-alive, 
+the connection is persistent and not closed, 
+allowing for subsequent requests to the same server to be done.
+
+The Connection general-header field allows the sender to specify options
+that are desired for that particular connection
+and MUST NOT be communicated by proxies over further connections.
+
+
+3) Monitoring HHTP Headers 3 (Response-codes 3xx):
+
+The two HTTP request we see are GET requests. The doGet method grabs the "HttpServletResponse response"
+and points via "response.sendRedirect("r.html");" to the r.html file.
+
+
+3a) Redirecting to HTTPs instead of HTTP:
+The Status is a 304 (redirect) which means that you are redirected to another site/file than the index.html
+In this case we're redirected to https://studypoints.info/#/view1. Emphasis on the "/#/view1".
+
+
+4a) Status codes (5xx):
+
+"HTTP Status 500 – Internal Server Error"
+java.lang.ArithmeticException: / by zero
+we get a server error when we try to divide by 0 in the processRequest.
+
+
+4b) Status Codes (4xx):
+
+"Message The requested resource [/w2HTTPProtocol/i_dont_exist] is not available"
+We request a servlet that do not exist. Therefore no connection can be established.
+
+
+4c) Status Codes - Ranges:
+
+2xx - this means succesfull request
+3xx - this means a "redirect" has been made
+4xx - this means a client error. Something does not exist.
+5xx - this means a srever error has occured.
+
+
+5) Get HTTP Request Headers on the Server:
+
+I created a new servlet named "Print" and entered some print commands:
+
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet NewServlet</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet NewServlet DETTE ER EN NY SERVLET" + request.getContextPath() + "</h1>");
+            out.println("<br>");
+            out.println(request.getHeader("host")+"\n");
+            out.println("<br>");
+            out.println(request.getHeader("connection")+"\n");
+            out.println("<br>");
+            out.println(request.getHeader("cache-control")+"\n");
+            out.println("<br>");
+            out.println(request.getHeader("accept")+"\n");
+            out.println("<br>");
+            out.println(request.getHeader("user-agent")+"\n");
+            out.println("<br>");
+            out.println(request.getHeader("accept-encoding")+"\n");
+            out.println("<br>");
+            out.println(request.getHeader("accept-language"));
+            out.println("</body>");
+            out.println("</html>");
+        }
+    }
+
+
+6) Get/Post-parameters:
+
+With the GET method, the user requests the server's information. After pressing submit, we observe how
+the browser adress changes and shows us the information parsed. Its a query String. You recieve a status 304.
+This confirms that it is a request.
+
+With the POST method, the user recieves information, a "response". After pressing submit we recieve
+form data. With post you get a status code 200, which means a succesfull response.
+
+
+7) Sessions (Session Cookies):
+
+e)
+WE can see the cookie applied to the session with the ID below. It lives as long as the browser is valid. But you can redo the tap with the URL pasted.
+"Cookie: JSESSIONID=C4869C71DCE719BBC9663D4ED7E7DB9C" is added at the bottom of the Request Headers.
+
+
+8) Persistent Cookies:
+
+g)
+The code of the cookie creates a cookie object and writes the information parsed to a file. In this instance it saves the name parameter
+and sets it's max age to last a year. This means that for the next year the site will remember the name "insertname".
+
+This can be oberserved in the network tab, where you can find a CookieDemo file with the given name parameter. You can go to "applications"
+aswell and go to cookie tab to see the same result.
